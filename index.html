@@ -76,6 +76,43 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
 .prob-table th{color:#666;font-weight:600;}
 .prob-table td.amt{color:var(--theme-c);font-weight:700;}
 #scratchCanvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;touch-action:none;display:block;border-radius:14px;}
+/* 商店按钮 */
+.shop-btn{background:linear-gradient(135deg,#8e44ad,#5b2c6f);color:#fff;flex:0 0 90px;box-shadow:0 2px 6px rgba(142,68,173,.35);}
+.shop-btn:hover{transform:translateY(-1px);}
+/* 商店弹窗遮罩 */
+.shop-mask{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;justify-content:center;align-items:flex-start;padding:30px 12px;backdrop-filter:blur(4px);}
+.shop-mask.show{display:flex;animation:fadeIn .25s ease;}
+@keyframes fadeIn{0%{opacity:0;}100%{opacity:1;}}
+.shop-panel{width:100%;max-width:520px;background:linear-gradient(160deg,#1a1a2e,#16213e);border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.5);border:1px solid rgba(255,213,74,.2);animation:slideUp .3s ease;}
+@keyframes slideUp{0%{transform:translateY(30px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+.shop-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:linear-gradient(135deg,#2c1a4a,#1a274a);border-bottom:1px solid rgba(255,213,74,.15);}
+.shop-header h2{margin:0;font-size:20px;color:#ffd54a;letter-spacing:1px;}
+.shop-header .close{background:none;border:none;color:#cde;font-size:22px;cursor:pointer;width:36px;height:36px;border-radius:50%;transition:.2s;}
+.shop-header .close:hover{background:rgba(255,255,255,.1);}
+.shop-body{padding:16px;display:flex;flex-direction:column;gap:12px;}
+.shop-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:.2s;}
+.shop-item:hover{background:rgba(255,255,255,.1);}
+.shop-item .info{flex:1;}
+.shop-item .info h3{margin:0 0 4px;font-size:16px;color:#fff;display:flex;align-items:center;gap:8px;}
+.shop-item .info h3 .icon{font-size:22px;}
+.shop-item .info .desc{font-size:12px;color:#9ab;line-height:1.5;margin:0;}
+.shop-item .info .stock{display:inline-block;margin-top:6px;font-size:11px;background:rgba(127,212,255,.15);color:#7fd4ff;padding:2px 8px;border-radius:5px;}
+.shop-item .buy{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.shop-item .buy .price{font-size:15px;font-weight:700;color:#ffd54a;}
+.shop-item .buy button{padding:8px 14px;border:none;border-radius:8px;background:linear-gradient(135deg,#e67e22,#d35400);color:#fff;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(230,126,34,.4);transition:.2s;}
+.shop-item .buy button:hover{transform:translateY(-1px);}
+.shop-item .buy button:disabled{background:#555;box-shadow:none;cursor:not-allowed;}
+/* 道具条 */
+.inv-bar{display:flex;gap:8px;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.inv-item{display:flex;align-items:center;gap:4px;background:rgba(255,213,74,.08);border:1px solid rgba(255,213,74,.2);color:#fff;padding:4px 10px;border-radius:8px;font-size:12px;}
+.inv-item .num{color:#ffd54a;font-weight:700;}
+.inv-item .use-btn{margin-left:4px;background:rgba(46,204,113,.2);border:1px solid rgba(46,204,113,.4);color:#7bed9f;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;transition:.2s;}
+.inv-item .use-btn:hover{background:rgba(46,204,113,.35);}
+.inv-item .use-btn:disabled{background:#555;border-color:#555;color:#999;cursor:not-allowed;}
+/* 透视结果浮层 */
+.peek-badge{position:absolute;top:10px;right:10px;z-index:4;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:pop .3s ease;}
+.peek-badge.win{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;}
+.peek-badge.lose{background:linear-gradient(135deg,#7f8c8d,#5d6d7e);color:#fff;}
 .app.denom-20{--accent:var(--c-20-acc);--theme-bg:var(--c-20-bg);--theme-c:var(--c-20);}
 .app.denom-50{--accent:var(--c-50-acc);--theme-bg:var(--c-50-bg);--theme-c:var(--c-50);}
 @media(max-width:380px){
@@ -115,13 +152,58 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
     <div class="hint" id="resultHint">刮开彩票后揭晓</div>
     <button class="redeem-btn" id="redeemBtn">一键兑换</button>
   </div>
+  <div class="inv-bar" id="invBar">
+    <div class="inv-item">🔍 透视镜 <span class="num" id="invPeek">0</span>
+      <button class="use-btn" id="usePeekBtn">使用</button>
+    </div>
+    <div class="inv-item">🎴 逆天改命 <span class="num" id="invFate">0</span>
+      <button class="use-btn" id="useFateBtn">使用</button>
+    </div>
+  </div>
   <div class="controls">
     <button id="newBtn">再来一张</button>
     <button id="revealBtn">一键刮开</button>
+    <button id="shopBtn" class="shop-btn">商店</button>
     <button id="loanBtn" class="loan-btn">贷款 ¥500</button>
   </div>
   <div class="prob-toggle" id="probToggle">查看本档概率明细 ▾</div>
   <div class="prob-table" id="probTable"></div>
+</div>
+
+<!-- 商店弹窗 -->
+<div class="shop-mask" id="shopMask">
+  <div class="shop-panel">
+    <div class="shop-header">
+      <h2>🏪 幸运商店</h2>
+      <button class="close" id="shopClose">✕</button>
+    </div>
+    <div class="shop-body" id="shopBody">
+      <!-- 透视镜 -->
+      <div class="shop-item">
+        <div class="info">
+          <h3><span class="icon">🔍</span>透视镜</h3>
+          <p class="desc">使用后可透视当前未刮开彩票是否中奖（显示中/不中奖信息）。<br>一次购买可使用 3 次。</p>
+          <span class="stock" id="stockPeek">库存：无限</span>
+        </div>
+        <div class="buy">
+          <span class="price">¥500</span>
+          <button id="buyPeekBtn">购买</button>
+        </div>
+      </div>
+      <!-- 逆天改命卡 -->
+      <div class="shop-item">
+        <div class="info">
+          <h3><span class="icon">🎴</span>逆天改命卡</h3>
+          <p class="desc">使用即开奖：99% 概率获得 ¥1，1% 概率获得 ¥5000。<br>单张购买可使用 1 次。</p>
+          <span class="stock" id="stockFate">库存：无限</span>
+        </div>
+        <div class="buy">
+          <span class="price">¥150</span>
+          <button id="buyFateBtn">购买</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -191,6 +273,12 @@ let balance = 500;          // 玩家余额（初始本金 ¥500）
 let redeemed = false;       // 当前彩票奖金是否已兑换
 let loanDebt = 0;           // 当前欠款总额（贷款累计）
 const LOAN_AMT = 500;       // 单次贷款金额
+// 商店道具
+let peekUses = 0;           // 透视镜剩余使用次数
+let fateUses = 0;           // 逆天改命卡剩余使用次数
+let peeked = false;         // 当前彩票是否已使用透视镜（防重复）
+const PEEK_PRICE = 500;     // 透视镜售价（购买一次得 3 次使用）
+const FATE_PRICE = 150;     // 逆天改命卡售价（购买一次得 1 次使用）
 
 const $ = id => document.getElementById(id);
 const app = $('app');
@@ -536,6 +624,10 @@ function newGame(denom){
   curDenom = denom;
   redeemed = false;
   charged = false;            // 新彩票未计费，刮开时才扣款
+  peeked = false;             // 重置透视标记
+  // 移除上一张彩票的透视徽章
+  const oldBadge = document.querySelector('.peek-badge');
+  if(oldBadge) oldBadge.remove();
   updateTheme(denom);
   updateInfo(denom);
   renderProbTable(denom);
@@ -543,6 +635,7 @@ function newGame(denom){
   curTicket = generateTicket(denom);
   renderTicket(curTicket);
   resetResult();
+  updateInv();
   // 等待 DOM 布局完成后初始化刮膜
   requestAnimationFrame(()=> requestAnimationFrame(setupCanvas));
 }
@@ -556,6 +649,87 @@ function loan(){
   updateBalance(`贷款 ¥${fmt(LOAN_AMT)} 到账，欠款 ¥${fmt(loanDebt)}`);
 }
 
+// ===== 道具栏更新 =====
+function updateInv(){
+  $('invPeek').textContent = peekUses;
+  $('invFate').textContent = fateUses;
+  $('usePeekBtn').disabled = peekUses <= 0 || !curTicket || revealed || peeked;
+  $('useFateBtn').disabled = fateUses <= 0;
+}
+// ===== 商店 =====
+function openShop(){
+  $('buyPeekBtn').disabled = balance < PEEK_PRICE;
+  $('buyFateBtn').disabled = balance < FATE_PRICE;
+  $('shopMask').classList.add('show');
+}
+function closeShop(){ $('shopMask').classList.remove('show'); }
+function buyPeek(){
+  if(balance < PEEK_PRICE) return;
+  balance -= PEEK_PRICE;
+  peekUses += 3;
+  updateBalance(`购买透视镜（¥${PEEK_PRICE}），可用 ${peekUses} 次`);
+  updateInv();
+  $('buyPeekBtn').disabled = balance < PEEK_PRICE;
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 600);
+}
+function buyFate(){
+  if(balance < FATE_PRICE) return;
+  balance -= FATE_PRICE;
+  fateUses += 1;
+  updateBalance(`购买逆天改命卡（¥${FATE_PRICE}），剩余 ${fateUses} 张`);
+  updateInv();
+  $('buyFateBtn').disabled = balance < FATE_PRICE;
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 600);
+}
+// ===== 使用道具：透视镜 =====
+function usePeek(){
+  if(peekUses <= 0 || !curTicket || revealed || peeked) return;
+  peekUses -= 1;
+  peeked = true;
+  const won = curTicket.total > 0;
+  // 在彩票右上角显示结果浮层
+  const wrap = $('ticketWrap');
+  let badge = wrap.querySelector('.peek-badge');
+  if(badge) badge.remove();
+  badge = document.createElement('div');
+  badge.className = 'peek-badge ' + (won ? 'win' : 'lose');
+  badge.textContent = won ? `🔍 透视：已中奖（¥${fmt(curTicket.total)}）` : '🔍 透视：未中奖';
+  wrap.appendChild(badge);
+  updateInv();
+  updateBalance(`使用透视镜，结果：${won ? '中奖' : '未中奖'}，剩余 ${peekUses} 次`);
+}
+// ===== 使用道具：逆天改命卡 =====
+function useFate(){
+  if(fateUses <= 0) return;
+  fateUses -= 1;
+  // 99% 概率 ¥1，1% 概率 ¥5000
+  const isBig = Math.random() < 0.01;
+  const prize = isBig ? 5000 : 1;
+  // 优先还贷（逻辑与兑换奖金相同）
+  let tip;
+  if(loanDebt > 0){
+    const repay = Math.min(loanDebt, prize);
+    loanDebt -= repay;
+    const remain = prize - repay;
+    balance += remain;
+    tip = isBig
+      ? `逆天改命大爆发！获得 ¥${fmt(prize)}（还款 ¥${fmt(repay)}，入账 ¥${fmt(remain)}）`
+      : `逆天改命获得 ¥${fmt(prize)}（还款 ¥${fmt(repay)}）`;
+  } else {
+    balance += prize;
+    tip = isBig ? `逆天改命大爆发！获得 ¥${fmt(prize)}！` : `逆天改命获得 ¥${fmt(prize)}`;
+  }
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 800);
+  updateBalance(tip);
+  updateInv();
+}
+
 // ===== 事件 =====
 document.querySelectorAll('.denom-selector button').forEach(b=>{
   b.addEventListener('click', ()=> newGame(+b.dataset.d));
@@ -564,6 +738,15 @@ $('newBtn').addEventListener('click', ()=> newGame(curDenom));
 $('revealBtn').addEventListener('click', autoReveal);
 $('redeemBtn').addEventListener('click', redeem);
 $('loanBtn').addEventListener('click', loan);
+// 商店
+$('shopBtn').addEventListener('click', openShop);
+$('shopClose').addEventListener('click', closeShop);
+$('shopMask').addEventListener('click', e=>{ if(e.target.id === 'shopMask') closeShop(); });
+$('buyPeekBtn').addEventListener('click', buyPeek);
+$('buyFateBtn').addEventListener('click', buyFate);
+// 道具使用
+$('usePeekBtn').addEventListener('click', usePeek);
+$('useFateBtn').addEventListener('click', useFate);
 $('probToggle').addEventListener('click', ()=> $('probTable').classList.toggle('show'));
 window.addEventListener('resize', ()=>{
   if(!curTicket) return;
