@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>十倍幸运 · 刮刮乐模拟</title>
+<style>
+:root{
+  --c-10:#1f7a3d; --c-10-bg:linear-gradient(135deg,#1f7a3d,#0d5a28); --c-10-acc:#ffd54a;
+  --c-20:#1a6b8a; --c-20-bg:linear-gradient(135deg,#1a6b8a,#0d4a63); --c-20-acc:#7fd4ff;
+  --c-50:#a06800; --c-50-bg:linear-gradient(135deg,#a06800,#6e4500); --c-50-acc:#ffe08a;
+  --accent:var(--c-10-acc);
+  --theme-bg:var(--c-10-bg);
+  --theme-c:var(--c-10);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f1a14;color:#222;}
+body{min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:16px 12px 40px;}
+.app{width:100%;max-width:560px;display:flex;flex-direction:column;gap:14px;}
+header{text-align:center;color:#fff;padding:6px 0;}
+header h1{margin:0;font-size:22px;letter-spacing:2px;text-shadow:0 2px 4px rgba(0,0,0,.4);}
+header p{margin:4px 0 0;font-size:12px;opacity:.8;}
+.denom-selector{display:flex;gap:8px;background:rgba(255,255,255,.08);padding:6px;border-radius:12px;}
+.denom-selector button{flex:1;padding:10px 0;border:none;border-radius:8px;background:transparent;color:#cfe;cursor:pointer;font-size:15px;font-weight:600;transition:.2s;}
+.denom-selector button.active{background:var(--theme-bg);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.info-bar{display:flex;justify-content:space-between;gap:6px;background:rgba(255,255,255,.95);border-radius:10px;padding:8px 10px;font-size:11px;}
+.info-bar .item{flex:1;text-align:center;}
+.info-bar .item b{display:block;font-size:15px;color:var(--theme-c);font-weight:700;}
+.info-bar .item span{color:#666;}
+.balance-bar{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 4px 12px rgba(0,0,0,.3);border:1px solid rgba(255,213,74,.25);}
+.balance-bar .lbl{font-size:11px;opacity:.7;}
+.balance-bar .bal{font-size:26px;font-weight:800;color:#ffd54a;letter-spacing:1px;transition:color .3s;}
+.balance-bar .bal.gain{color:#7bed9f;}
+.balance-bar .bal.low{color:#ff6b6b;}
+.balance-bar .bal-tip{font-size:12px;opacity:.75;text-align:right;max-width:50%;}
+.redeem-btn{margin-top:12px;padding:13px;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;box-shadow:0 3px 10px rgba(46,204,113,.4);width:100%;display:none;transition:transform .15s;}
+.redeem-btn.show{display:block;animation:pop .3s ease;}
+.redeem-btn:hover{transform:translateY(-1px);}
+.redeem-btn:disabled{background:#bbb;box-shadow:none;cursor:default;}
+.loan-btn{background:linear-gradient(135deg,#c0392b,#922b21);color:#fff;flex:0 0 110px;box-shadow:0 2px 6px rgba(192,57,43,.35);}
+.loan-btn:disabled{background:#bbb;box-shadow:none;cursor:default;}
+.debt-tag{display:inline-block;margin-left:8px;padding:2px 8px;background:rgba(255,107,107,.18);color:#ff8a8a;border:1px solid rgba(255,107,107,.4);border-radius:6px;font-size:11px;font-weight:600;}
+@keyframes pop{0%{transform:scale(.85);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.ticket-wrap{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.35);background:var(--theme-bg);transition:background .3s;}
+.ticket{position:relative;padding:14px;color:#fff;border-radius:14px;}
+.ticket .brand{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:10px;opacity:.9;border-bottom:1px dashed rgba(255,255,255,.3);padding-bottom:8px;}
+.ticket .brand .price{background:var(--accent);color:#333;font-weight:700;padding:2px 8px;border-radius:6px;font-size:13px;}
+.win-area{background:rgba(0,0,0,.28);border-radius:8px;padding:8px 10px;margin-bottom:10px;}
+.win-area .label{font-size:11px;opacity:.85;margin-bottom:6px;}
+.win-area .nums{display:flex;flex-wrap:wrap;gap:6px;}
+.win-area .nums span{display:inline-block;min-width:32px;text-align:center;background:#fff;color:#c81414;font-weight:700;padding:3px 6px;border-radius:6px;font-size:14px;}
+.rounds-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
+.round{background:rgba(255,255,255,.95);color:#222;border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:3px;position:relative;overflow:hidden;}
+.round.won{background:linear-gradient(135deg,#fff7d6,#ffe9a8);box-shadow:0 0 0 2px var(--accent) inset;}
+.round .r-num{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#888;}
+.round .r-num .idx{font-weight:700;color:#444;}
+.round .r-num .r-status{font-weight:700;color:var(--theme-c);}
+.round .r-mid{display:flex;justify-content:space-between;align-items:center;}
+.round .mine{font-weight:700;font-size:15px;color:#c81414;}
+.round .prize{font-size:13px;color:var(--theme-c);font-weight:700;}
+.round .mult{position:absolute;top:4px;right:4px;background:linear-gradient(45deg,#ff6b00,#ffb300);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;}
+.result-panel{background:rgba(255,255,255,.95);border-radius:12px;padding:14px;text-align:center;}
+.result-panel .lbl{font-size:12px;color:#666;}
+.result-panel .amt{font-size:28px;font-weight:800;color:var(--theme-c);margin:4px 0;}
+.result-panel .amt.zero{color:#999;}
+.result-panel .hint{font-size:11px;color:#999;}
+.controls{display:flex;gap:10px;}
+.controls button{flex:1;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;}
+#newBtn{background:linear-gradient(135deg,#ff6b00,#ffb300);color:#fff;box-shadow:0 3px 10px rgba(255,107,0,.4);}
+#revealBtn{background:#e8e8e8;color:#555;}
+.prob-toggle{text-align:center;color:#9df;cursor:pointer;font-size:12px;text-decoration:underline;}
+.prob-table{background:rgba(255,255,255,.95);border-radius:10px;padding:10px 12px;font-size:11px;display:none;}
+.prob-table.show{display:block;}
+.prob-table table{width:100%;border-collapse:collapse;}
+.prob-table th,.prob-table td{padding:3px 4px;text-align:left;border-bottom:1px solid #eee;}
+.prob-table th{color:#666;font-weight:600;}
+.prob-table td.amt{color:var(--theme-c);font-weight:700;}
+#scratchCanvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;touch-action:none;display:block;border-radius:14px;}
+.app.denom-20{--accent:var(--c-20-acc);--theme-bg:var(--c-20-bg);--theme-c:var(--c-20);}
+.app.denom-50{--accent:var(--c-50-acc);--theme-bg:var(--c-50-bg);--theme-c:var(--c-50);}
+@media(max-width:380px){
+  .rounds-grid{grid-template-columns:1fr;}
+  header h1{font-size:18px;}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <h1>十倍幸运 · 刮刮乐</h1>
+    <p>模拟即开型彩票 · 仅供娱乐</p>
+  </header>
+  <div class="balance-bar" id="balanceBar">
+    <div><div class="lbl">当前余额</div><div class="bal" id="balanceAmt">¥500</div></div>
+    <div class="bal-tip" id="balanceTip">初始本金 ¥500</div>
+  </div>
+  <div class="denom-selector" id="denomSelector">
+    <button data-d="10">10元档</button>
+    <button data-d="20">20元档</button>
+    <button data-d="50">50元档</button>
+  </div>
+  <div class="info-bar" id="infoBar">
+    <div class="item"><b id="iPrice">¥10</b><span>面值</span></div>
+    <div class="item"><b id="iMax">250,000</b><span>最高奖金</span></div>
+    <div class="item"><b id="iRounds">10</b><span>游戏局数</span></div>
+    <div class="item"><b id="iWinRate">35%</b><span>综合中奖面</span></div>
+  </div>
+  <div class="ticket-wrap" id="ticketWrap">
+    <div class="ticket" id="ticket"></div>
+    <canvas id="scratchCanvas"></canvas>
+  </div>
+  <div class="result-panel" id="resultPanel">
+    <div class="lbl">本局总奖金</div>
+    <div class="amt zero" id="resultAmt">¥0</div>
+    <div class="hint" id="resultHint">刮开彩票后揭晓</div>
+    <button class="redeem-btn" id="redeemBtn">一键兑换</button>
+  </div>
+  <div class="controls">
+    <button id="newBtn">再来一张</button>
+    <button id="revealBtn">一键刮开</button>
+    <button id="loanBtn" class="loan-btn">贷款 ¥500</button>
+  </div>
+  <div class="prob-toggle" id="probToggle">查看本档概率明细 ▾</div>
+  <div class="prob-table" id="probTable"></div>
+</div>
+
+<script>
+// ===== 档位配置：严格对齐官方理论概率 =====
+const DENOMS = {
+  10:{price:10,rounds:10,maxPrize:250000,winRate:0.35,multRate:1/12,tiers:[
+    {n:'一等',a:250000,p:1/1800000},
+    {n:'二等',a:5000,p:1/180000},
+    {n:'三等',a:1600,p:1/45000},
+    {n:'四等',a:800,p:1/13846},
+    {n:'五等',a:400,p:1/4500},
+    {n:'六等',a:100,p:1/1440},
+    {n:'七等',a:50,p:1/240},
+    {n:'八等',a:30,p:1/120},
+    {n:'九等',a:20,p:1/48},
+    {n:'十等',a:10,p:1/4.2},
+  ]},
+  20:{price:20,rounds:12,maxPrize:1000000,winRate:0.37,multRate:1/10,tiers:[
+    {n:'一等',a:1000000,p:1/9000000},
+    {n:'二等',a:100000,p:1/900000},
+    {n:'三等',a:10000,p:1/180000},
+    {n:'四等',a:1000,p:1/3396},
+    {n:'五等',a:800,p:1/600},
+    {n:'六等',a:400,p:1/360},
+    {n:'七等',a:100,p:1/300},
+    {n:'八等',a:80,p:1/60},
+    {n:'九等',a:50,p:1/12},
+    {n:'十等',a:20,p:1/4.8},
+  ]},
+  50:{price:50,rounds:15,maxPrize:1500000,winRate:0.40,multRate:1/8,tiers:[
+    {n:'一等',a:1500000,p:1/9000000},
+    {n:'二等',a:500000,p:1/900000},
+    {n:'三等',a:100000,p:1/450000},
+    {n:'四等',a:10000,p:1/16363},
+    {n:'五等',a:1000,p:1/5000},
+    {n:'六等',a:500,p:1/480},
+    {n:'七等',a:200,p:1/120},
+    {n:'八等',a:150,p:1/72},
+    {n:'九等',a:100,p:1/18},
+    {n:'十等',a:50,p:1/5.5},
+  ]},
+};
+
+// ===== 工具函数 =====
+const rand = () => Math.random();
+const fmt = n => Number(n).toLocaleString('zh-CN');
+const num2 = () => String(Math.floor(rand()*100)).padStart(2,'0');
+
+// 按权重抽取奖级
+function pickTier(tiers){
+  const total = tiers.reduce((s,t)=>s+t.p, 0);
+  let r = rand()*total;
+  for(const t of tiers){ r -= t.p; if(r<=0) return t; }
+  return tiers[tiers.length-1];
+}
+
+// ===== 状态 =====
+let curDenom = 10;
+let curTicket = null;
+let revealed = false;       // 当前彩票是否已揭层
+let charged = false;        // 当前彩票是否已扣款（刮开时才计费）
+let drawing = false, lastX=0, lastY=0;
+let lastCheck = 0;
+const ER = 22;               // 刮擦半径
+const THRESH = 0.5;         // 刮开面积阈值
+let balance = 500;          // 玩家余额（初始本金 ¥500）
+let redeemed = false;       // 当前彩票奖金是否已兑换
+let loanDebt = 0;           // 当前欠款总额（贷款累计）
+const LOAN_AMT = 500;       // 单次贷款金额
+
+const $ = id => document.getElementById(id);
+const app = $('app');
+const ticketEl = $('ticket');
+const wrapEl = $('ticketWrap');
+const canvas = $('scratchCanvas');
+const ctx = canvas.getContext('2d');
+
+// ===== 生成一张彩票（加权随机算法） =====
+// 规则：
+//  1. 综合中奖面严格执行（10元35% / 20元37% / 50元40%）→ 整张是否中奖的闸门
+//  2. 中奖票内：主奖级按单项奖概率加权抽取（十等回本奖权重最大，头奖百万分之一级）
+//  3. 兼中兼得：中奖票约 20% 概率额外中一个回本奖（十等），多局奖金累加；不影响大奖频率
+//  4. 倍率符号：每局独立出现，单张出现概率 ≈ multRate；本局中奖时奖金×10，封顶 maxPrize
+function generateTicket(denom){
+  const cfg = DENOMS[denom];
+  const winSet = new Set();
+  while(winSet.size < 6) winSet.add(num2());
+  const winNums = [...winSet];
+  const minTier = cfg.tiers[cfg.tiers.length-1]; // 十等（回本奖）
+  // 每局出现倍率符号的概率（保证单张出现概率≈multRate）
+  const multPerRound = 1 - Math.pow(1 - cfg.multRate, 1/cfg.rounds);
+
+  const isTicketWin = rand() < cfg.winRate;
+  const primaryIdx = isTicketWin ? Math.floor(rand()*cfg.rounds) : -1;
+  // 兼中兼得：中奖票 20% 概率再中一个回本奖（十等），落在不同局
+  let extraIdx = -1;
+  if(isTicketWin && rand() < 0.20){
+    do{ extraIdx = Math.floor(rand()*cfg.rounds); } while(extraIdx === primaryIdx);
+  }
+
+  const rounds = [];
+  for(let i=0;i<cfg.rounds;i++){
+    const mult = rand() < multPerRound;
+    let win=false, tier=null, actual=0, display=0, finalMine='';
+    if(i === primaryIdx){
+      // 主奖级：全分布抽取
+      tier = pickTier(cfg.tiers);
+      win = true;
+      const base = tier.a;
+      const v = mult ? Math.min(base*10, cfg.maxPrize) : base;
+      actual = v; display = v;
+      finalMine = winNums[Math.floor(rand()*winNums.length)];
+    } else if(i === extraIdx){
+      // 兼中兼得：仅回本奖（十等）
+      tier = minTier;
+      win = true;
+      const base = tier.a;
+      const v = mult ? Math.min(base*10, cfg.maxPrize) : base;
+      actual = v; display = v;
+      finalMine = winNums[Math.floor(rand()*winNums.length)];
+    } else {
+      // 未中奖：展示干扰金额
+      const dt = cfg.tiers[Math.floor(rand()*cfg.tiers.length)];
+      display = mult ? Math.min(dt.a*10, cfg.maxPrize) : dt.a;
+      actual = 0;
+      do{ finalMine = num2(); } while(winSet.has(finalMine));
+    }
+    // 防泄露：揭层前 DOM 显示随机号码，揭层瞬间同步为真实结果
+    const initialMine = num2();
+    rounds.push({idx:i+1, win, tier, mine:initialMine, finalMine, displayPrize:display, actualPrize:actual, mult});
+  }
+  const total = rounds.reduce((s,r)=>s+r.actualPrize, 0);
+  return {denom, winNums, rounds, total, cfg, isWin:isTicketWin};
+}
+
+// ===== 渲染彩票 DOM（揭层前用随机号码，防泄露） =====
+function renderTicket(t){
+  ticketEl.innerHTML = `
+    <div class="brand">
+      <span>中国体育彩票 · 十倍幸运</span>
+      <span class="price">面值 ¥${t.cfg.price}</span>
+    </div>
+    <div class="win-area">
+      <div class="label">中奖号码（任意局号码与之相同即中奖）</div>
+      <div class="nums">${t.winNums.map(n=>`<span>${n}</span>`).join('')}</div>
+    </div>
+    <div class="rounds-grid">
+      ${t.rounds.map((r,i)=>`
+        <div class="round" data-idx="${i}">
+          ${r.mult?'<div class="mult">10倍</div>':''}
+          <div class="r-num"><span class="idx">第${r.idx}局</span><span class="r-status"></span></div>
+          <div class="r-mid">
+            <span class="mine">${r.mine}</span>
+            <span class="prize">¥${fmt(r.displayPrize)}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ===== 揭层瞬间：同步 DOM 为真实结果（在 canvas 淡出过程中执行，用户感知不到变化） =====
+function revealDom(){
+  const t = curTicket;
+  t.rounds.forEach((r,i)=>{
+    const el = ticketEl.querySelector(`.round[data-idx="${i}"]`);
+    if(!el) return;
+    el.querySelector('.mine').textContent = r.finalMine;
+    if(r.win){
+      el.classList.add('won');
+      el.querySelector('.r-status').textContent = '中奖';
+    }
+  });
+}
+
+// ===== Canvas 刮膜 =====
+function setupCanvas(){
+  const rect = wrapEl.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.globalCompositeOperation = 'source-over';
+  // 灰色刮膜渐变
+  const g = ctx.createLinearGradient(0,0,rect.width,rect.height);
+  g.addColorStop(0,'#a0a5aa');
+  g.addColorStop(0.5,'#8a8f94');
+  g.addColorStop(1,'#6b7075');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,rect.width,rect.height);
+  // 斜纹纹理
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for(let x=-rect.height; x<rect.width; x+=8){
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x+rect.height,rect.height);
+    ctx.stroke();
+  }
+  // 提示文字
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = 'bold 20px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('刮开此处揭晓', rect.width/2, rect.height/2 - 10);
+  ctx.font = '12px sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.fillText('鼠标拖动 / 手指滑动', rect.width/2, rect.height/2 + 16);
+  // 切换为擦除模式
+  ctx.globalCompositeOperation = 'destination-out';
+  revealed = false;
+  canvas.style.opacity = '1';
+  canvas.style.pointerEvents = 'auto';
+  canvas.style.transition = '';
+}
+
+function pos(e){
+  const r = canvas.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+function eraseAt(x,y,r){
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fill();
+}
+function eraseLine(x1,y1,x2,y2,r){
+  ctx.lineWidth = r*2;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+}
+function eraseRatio(){
+  const w = canvas.width, h = canvas.height;
+  const data = ctx.getImageData(0,0,w,h).data;
+  let total=0, clear=0;
+  for(let i=3; i<data.length; i+=48){ // 每12个像素采样一次
+    total++;
+    if(data[i] < 50) clear++;
+  }
+  return total ? clear/total : 0;
+}
+function checkErase(){
+  const now = Date.now();
+  if(now - lastCheck < 180) return;
+  lastCheck = now;
+  if(eraseRatio() >= THRESH) autoReveal();
+}
+function autoReveal(){
+  if(revealed) return;
+  revealed = true;
+  // 刮开时刻才计费：首次刮开扣款
+  if(!charged){
+    charged = true;
+    const price = curTicket ? curTicket.cfg.price : DENOMS[curDenom].price;
+    balance -= price;
+    updateBalance(`刮开计费 ¥${price}`);
+  }
+  revealDom();               // 同步真实号码（在淡出过程中）
+  canvas.style.transition = 'opacity .45s ease';
+  canvas.style.opacity = '0';
+  setTimeout(()=>{
+    canvas.style.pointerEvents = 'none';
+    canvas.style.transition = '';
+  }, 460);
+  showResult();
+}
+
+canvas.addEventListener('pointerdown', e=>{
+  if(revealed) return;
+  drawing = true;
+  try{ canvas.setPointerCapture(e.pointerId); }catch(_){}
+  const p = pos(e);
+  lastX = p.x; lastY = p.y;
+  eraseAt(p.x, p.y, ER);
+});
+canvas.addEventListener('pointermove', e=>{
+  if(!drawing || revealed) return;
+  const p = pos(e);
+  eraseLine(lastX, lastY, p.x, p.y, ER);
+  lastX = p.x; lastY = p.y;
+  checkErase();
+});
+function endDraw(){ drawing = false; }
+canvas.addEventListener('pointerup', endDraw);
+canvas.addEventListener('pointercancel', endDraw);
+canvas.addEventListener('pointerleave', endDraw);
+
+// ===== 余额 / 结算面板 =====
+function updateBalance(tip){
+  const el = $('balanceAmt');
+  el.textContent = '¥' + fmt(balance);
+  el.classList.toggle('low', balance < 10);
+  // 欠款标签：欠款 > 0 时显示在余额右侧
+  if(loanDebt > 0){
+    el.innerHTML = '¥' + fmt(balance) + `<span class="debt-tag">欠 ¥${fmt(loanDebt)}</span>`;
+  }
+  if(tip) $('balanceTip').textContent = tip;
+}
+function showResult(){
+  const t = curTicket;
+  const amt = $('resultAmt'), hint = $('resultHint'), rbtn = $('redeemBtn');
+  if(t.total > 0){
+    amt.textContent = '¥' + fmt(t.total);
+    amt.classList.remove('zero');
+    hint.textContent = `恭喜中奖（面值 ¥${t.cfg.price}，回报 ¥${fmt(t.total)}）`;
+    // 显示一键兑换按钮（未兑换时）
+    if(!redeemed){
+      rbtn.textContent = `一键兑换 ¥${fmt(t.total)}`;
+      rbtn.classList.add('show');
+      rbtn.disabled = false;
+    }
+  } else {
+    amt.textContent = '¥0';
+    amt.classList.add('zero');
+    hint.textContent = '谢谢参与';
+    rbtn.classList.remove('show');
+  }
+}
+function resetResult(){
+  $('resultAmt').textContent = '¥0';
+  $('resultAmt').classList.add('zero');
+  $('resultHint').textContent = '刮开彩票后揭晓';
+  $('redeemBtn').classList.remove('show');
+}
+// 一键兑换：将本局奖金加入余额，优先偿还欠款
+function redeem(){
+  if(!curTicket || redeemed || curTicket.total <= 0) return;
+  redeemed = true;
+  const prize = curTicket.total;
+  let tip;
+  if(loanDebt > 0){
+    // 优先还款：奖金先抵扣欠款
+    const repay = Math.min(loanDebt, prize);
+    loanDebt -= repay;
+    const remain = prize - repay;
+    balance += remain;
+    tip = repay === prize
+      ? `奖金 ¥${fmt(prize)} 已优先还款，仍欠 ¥${fmt(loanDebt)}`
+      : `还款 ¥${fmt(repay)}，剩余奖金 ¥${fmt(remain)} 已入账，仍欠 ¥${fmt(loanDebt)}`;
+  } else {
+    balance += prize;
+    tip = `已兑换 ¥${fmt(prize)}`;
+  }
+  const rbtn = $('redeemBtn');
+  rbtn.disabled = true;
+  rbtn.textContent = '已兑换 ✓';
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 800);
+  updateBalance(tip);
+  $('resultHint').textContent = `奖金 ¥${fmt(curTicket.total)} 已存入余额`;
+}
+
+// ===== 主题 / 信息 / 概率表 =====
+function updateTheme(d){
+  app.classList.remove('denom-20','denom-50');
+  if(d===20) app.classList.add('denom-20');
+  else if(d===50) app.classList.add('denom-50');
+  document.querySelectorAll('.denom-selector button').forEach(b=>{
+    b.classList.toggle('active', +b.dataset.d === d);
+  });
+}
+function updateInfo(d){
+  const c = DENOMS[d];
+  $('iPrice').textContent = '¥' + c.price;
+  $('iMax').textContent = fmt(c.maxPrize);
+  $('iRounds').textContent = c.rounds;
+  $('iWinRate').textContent = (c.winRate*100).toFixed(0) + '%';
+}
+function renderProbTable(d){
+  const c = DENOMS[d];
+  const rows = c.tiers.map(t=>`
+    <tr><td>${t.n}</td><td class="amt">¥${fmt(t.a)}</td><td>1 / ${fmt(Math.round(1/t.p))}</td></tr>
+  `).join('');
+  $('probTable').innerHTML = `
+    <table>
+      <tr><th>奖级</th><th>奖金</th><th>单张理论概率</th></tr>
+      ${rows}
+      <tr><td>倍率</td><td class="amt">×10</td><td>单张约 1 / ${Math.round(1/c.multRate)}</td></tr>
+    </table>`;
+}
+
+// ===== 主流程 =====
+function newGame(denom){
+  const price = DENOMS[denom].price;
+  // 上局已刮开但未兑换的奖金：自动兑换（避免误操作损失）
+  // 注：未刮开的彩票未计费，直接作废不扣款
+  if(curTicket && revealed && !redeemed && curTicket.total > 0){
+    const prize = curTicket.total;
+    if(loanDebt > 0){
+      const repay = Math.min(loanDebt, prize);
+      loanDebt -= repay;
+      balance += prize - repay;
+      updateBalance(`自动兑换上局 ¥${fmt(prize)}（还款 ¥${fmt(repay)}）`);
+    } else {
+      balance += prize;
+      updateBalance(`自动兑换上局 ¥${fmt(prize)}`);
+    }
+  }
+  // 余额预检（不够则不允许开新局）
+  if(balance < price){
+    const tip = $('balanceTip');
+    tip.textContent = `余额不足（需 ¥${price}），请贷款或切换低档位`;
+    tip.style.color = '#ff6b6b';
+    setTimeout(()=>{ tip.style.color = ''; }, 2500);
+    return;
+  }
+  curDenom = denom;
+  redeemed = false;
+  charged = false;            // 新彩票未计费，刮开时才扣款
+  updateTheme(denom);
+  updateInfo(denom);
+  renderProbTable(denom);
+  updateBalance(`已出票 ¥${price}（刮开时计费）`);
+  curTicket = generateTicket(denom);
+  renderTicket(curTicket);
+  resetResult();
+  // 等待 DOM 布局完成后初始化刮膜
+  requestAnimationFrame(()=> requestAnimationFrame(setupCanvas));
+}
+// 贷款：向系统借入 ¥500，欠款累计
+function loan(){
+  balance += LOAN_AMT;
+  loanDebt += LOAN_AMT;
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 800);
+  updateBalance(`贷款 ¥${fmt(LOAN_AMT)} 到账，欠款 ¥${fmt(loanDebt)}`);
+}
+
+// ===== 事件 =====
+document.querySelectorAll('.denom-selector button').forEach(b=>{
+  b.addEventListener('click', ()=> newGame(+b.dataset.d));
+});
+$('newBtn').addEventListener('click', ()=> newGame(curDenom));
+$('revealBtn').addEventListener('click', autoReveal);
+$('redeemBtn').addEventListener('click', redeem);
+$('loanBtn').addEventListener('click', loan);
+$('probToggle').addEventListener('click', ()=> $('probTable').classList.toggle('show'));
+window.addEventListener('resize', ()=>{
+  if(!curTicket) return;
+  if(revealed){
+    const rect = wrapEl.getBoundingClientRect();
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+  } else {
+    setupCanvas();
+  }
+});
+
+// 启动
+newGame(10);
+</script>
+</body>
+</html>
