@@ -160,6 +160,38 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
 @keyframes fateOut{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(.8);opacity:0;}}
 .app.denom-20{--accent:var(--c-20-acc);--theme-bg:var(--c-20-bg);--theme-c:var(--c-20);}
 .app.denom-50{--accent:var(--c-50-acc);--theme-bg:var(--c-50-bg);--theme-c:var(--c-50);}
+/* ===== 幸运红包样式 ===== */
+.redpack-flash{position:fixed;inset:0;z-index:200;display:flex;justify-content:center;align-items:center;pointer-events:none;animation:rpFlash 1.2s ease-out forwards;}
+.redpack-flash{background:radial-gradient(circle, rgba(255,99,71,.5) 0%, rgba(255,99,71,0) 70%);}
+@keyframes rpFlash{0%{opacity:0;}15%{opacity:1;}100%{opacity:0;}}
+.redpack-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.5);z-index:201;background:linear-gradient(160deg,#3e1a1a,#5a1a1a);color:#fff;padding:30px 46px;border-radius:22px;text-align:center;box-shadow:0 24px 70px rgba(255,60,60,.45);border:3px solid #ff6347;opacity:0;pointer-events:none;animation:rpIn .7s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes rpIn{0%{transform:translate(-50%,-50%) scale(.3) rotate(-15deg);opacity:0;}50%{transform:translate(-50%,-50%) scale(1.12) rotate(5deg);opacity:1;}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
+.redpack-modal .rp-icon{font-size:66px;line-height:1;margin-bottom:6px;display:block;animation:rpShake .5s ease .3s 2;}
+@keyframes rpShake{0%,100%{transform:rotate(0) scale(1);}25%{transform:rotate(-8deg) scale(1.1);}75%{transform:rotate(8deg) scale(1.1);}}
+.redpack-modal .rp-title{font-size:26px;font-weight:800;margin-bottom:8px;letter-spacing:2px;color:#ffe066;text-shadow:0 0 16px rgba(255,224,102,.7);}
+.redpack-modal .rp-amt{font-size:44px;font-weight:900;margin:6px 0 10px;font-family:'Courier New',monospace;color:#ffe066;letter-spacing:2px;text-shadow:0 0 20px rgba(255,224,102,.8);animation:numPop .4s ease .6s both;}
+@keyframes numPop{0%{transform:scale(.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.redpack-modal .rp-sub{font-size:14px;opacity:.9;line-height:1.6;}
+.redpack-modal.out{animation:rpOut .45s ease forwards !important;}
+@keyframes rpOut{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(.85) rotate(5deg);opacity:0;}}
+/* ===== 保本保险卡样式 ===== */
+.ins-flash{position:fixed;inset:0;z-index:200;display:flex;justify-content:center;align-items:center;pointer-events:none;animation:insFlash .8s ease-out forwards;}
+.ins-flash.on{background:radial-gradient(circle, rgba(46,204,113,.4) 0%, rgba(46,204,113,0) 70%);}
+.ins-flash.back{background:radial-gradient(circle, rgba(255,215,0,.5) 0%, rgba(255,215,0,0) 70%);animation:goldFlash 1.3s ease-out;}
+@keyframes insFlash{0%{opacity:0;}20%{opacity:1;}100%{opacity:0;}}
+.ins-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.55);z-index:201;background:linear-gradient(160deg,#0f3b2e,#143d2c);color:#fff;padding:28px 40px;border-radius:22px;text-align:center;box-shadow:0 20px 60px rgba(46,204,113,.35);border:3px solid #2ecc71;opacity:0;pointer-events:none;animation:insIn .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+.ins-modal.back{background:linear-gradient(160deg,#3e3510,#4a3f0d);border-color:#ffd700;box-shadow:0 20px 60px rgba(255,215,0,.45);}
+@keyframes insIn{0%{transform:translate(-50%,-50%) scale(.5);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.08);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.ins-modal .ins-icon{font-size:58px;line-height:1;margin-bottom:8px;display:block;}
+.ins-modal .ins-title{font-size:24px;font-weight:800;margin-bottom:6px;letter-spacing:2px;}
+.ins-modal:not(.back) .ins-title{color:#7bed9f;}
+.ins-modal.back .ins-title{color:#ffd700;text-shadow:0 0 14px rgba(255,215,0,.7);}
+.ins-modal .ins-amt{font-size:34px;font-weight:900;margin:6px 0 10px;font-family:'Courier New',monospace;color:#ffd700;letter-spacing:2px;}
+.ins-modal .ins-sub{font-size:14px;opacity:.88;line-height:1.5;}
+.ins-modal.out{animation:insOut .4s ease forwards !important;}
+@keyframes insOut{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(.85);opacity:0;}}
+/* 投保成功后彩票上的保险徽章 */
+.ins-badge{position:absolute;top:10px;left:10px;z-index:6;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;box-shadow:0 3px 10px rgba(46,204,113,.5);animation:pop .3s ease;}
 @media(max-width:380px){
   .rounds-grid{grid-template-columns:1fr;}
   header h1{font-size:18px;}
@@ -204,6 +236,12 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
     <div class="inv-item">🎴 逆天改命 <span class="num" id="invFate">0</span>
       <button class="use-btn" id="useFateBtn">使用</button>
     </div>
+    <div class="inv-item">🧧 幸运红包 <span class="num" id="invRP">0</span>
+      <button class="use-btn" id="useRPBtn">使用</button>
+    </div>
+    <div class="inv-item">🛡️ 保本卡 <span class="num" id="invIns">0</span>
+      <button class="use-btn" id="useInsBtn">使用</button>
+    </div>
   </div>
   <div class="controls">
     <button id="newBtn">再来一张</button>
@@ -245,6 +283,30 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
         <div class="buy">
           <span class="price">¥150</span>
           <button id="buyFateBtn">购买</button>
+        </div>
+      </div>
+      <!-- 幸运红包 -->
+      <div class="shop-item">
+        <div class="info">
+          <h3><span class="icon">🧧</span>幸运红包</h3>
+          <p class="desc">点开即领随机现金 ¥5 ~ ¥88（¥5/¥10/¥20/¥50/¥88 五档概率）。<br>单张购买可使用 1 次，现金优先偿还欠款。</p>
+          <span class="stock" id="stockRP">库存：无限</span>
+        </div>
+        <div class="buy">
+          <span class="price">¥40</span>
+          <button id="buyRPBtn">购买</button>
+        </div>
+      </div>
+      <!-- 保本保险卡 -->
+      <div class="shop-item">
+        <div class="info">
+          <h3><span class="icon">🛡️</span>保本保险卡</h3>
+          <p class="desc">对当前未刮开彩票使用：若刮开后未中奖，返还面值 40% 到余额。<br>售价固定 ¥20，单张可使用 1 次（10元档仅返 ¥4、20元档返 ¥8、50元档返 ¥20，建议高面值使用）。</p>
+          <span class="stock">库存：无限</span>
+        </div>
+        <div class="buy">
+          <span class="price">¥20</span>
+          <button id="buyInsBtn">购买</button>
         </div>
       </div>
     </div>
@@ -324,6 +386,15 @@ let fateUses = 0;           // 逆天改命卡剩余使用次数
 let peeked = false;         // 当前彩票是否已使用透视镜（防重复）
 const PEEK_PRICE = 200;     // 透视镜售价（购买一次得 3 次使用）
 const FATE_PRICE = 150;     // 逆天改命卡售价（购买一次得 1 次使用）
+// 新增道具
+let rpUses = 0;             // 幸运红包剩余使用次数
+let insUses = 0;            // 保本保险卡剩余使用次数
+let insured = false;        // 当前彩票是否已投保（保本卡已对当前票生效）
+let insPaidOut = false;     // 当前彩票的保本是否已结算（防重复返还）
+const RP_PRICE = 40;        // 幸运红包售价
+// 保本保险卡：售价固定 ¥20，未中奖返还面值 × 0.4
+const INS_PRICE = 20;
+const INS_REFUND_RATIO = 0.4;
 
 const $ = id => document.getElementById(id);
 const app = $('app');
@@ -338,7 +409,7 @@ const ctx = canvas.getContext('2d');
 //  2. 中奖票内：主奖级按单项奖概率加权抽取（十等回本奖权重最大，头奖百万分之一级）
 //  3. 兼中兼得：中奖票约 20% 概率额外中一个回本奖（十等），多局奖金累加；不影响大奖频率
 //  4. 倍率符号：每局独立出现，单张出现概率 ≈ multRate；本局中奖时奖金×10，封顶 maxPrize
-function generateTicket(denom){
+function generateTicket(denom, winRateBuff=0){
   const cfg = DENOMS[denom];
   const winSet = new Set();
   while(winSet.size < 6) winSet.add(num2());
@@ -347,7 +418,9 @@ function generateTicket(denom){
   // 每局出现倍率符号的概率（保证单张出现概率≈multRate）
   const multPerRound = 1 - Math.pow(1 - cfg.multRate, 1/cfg.rounds);
 
-  const isTicketWin = rand() < cfg.winRate;
+  // 综合中奖面加成（幸运红包）：上限不超过 95%，避免极端
+  const finalWinRate = Math.min(0.95, cfg.winRate + winRateBuff);
+  const isTicketWin = rand() < finalWinRate;
   const primaryIdx = isTicketWin ? Math.floor(rand()*cfg.rounds) : -1;
   // 兼中兼得：中奖票 20% 概率再中一个回本奖（十等），落在不同局
   let extraIdx = -1;
@@ -526,6 +599,34 @@ function autoReveal(){
     canvas.style.transition = '';
   }, 460);
   showResult();
+  // ===== 保本保险卡结算：已投保 + 未中奖 + 未结算过 → 返还面值40% =====
+  if(insured && !insPaidOut && curTicket && curTicket.total <= 0){
+    insPaidOut = true;
+    const price = curTicket.cfg.price;
+    const refund = Math.round(price * INS_REFUND_RATIO);
+    // 返还金额同样优先还贷
+    let tip;
+    if(loanDebt > 0){
+      const repay = Math.min(loanDebt, refund);
+      loanDebt -= repay;
+      const remain = refund - repay;
+      balance += remain;
+      tip = repay > 0 && remain > 0
+        ? `还款 ¥${fmt(repay)}，入账 ¥${fmt(remain)}（仍欠 ¥${fmt(loanDebt)}）`
+        : repay > 0
+          ? `全部用于还款（仍欠 ¥${fmt(loanDebt)}）`
+          : `入账 ¥${fmt(remain)}，已还清欠款`;
+    } else {
+      balance += refund;
+      tip = `入账 ¥${fmt(refund)}`;
+    }
+    showInsResult('back', refund);
+    const el = $('balanceAmt');
+    el.classList.add('gain');
+    setTimeout(()=> el.classList.remove('gain'), 1000);
+    updateBalance('🛡️ 保本返还：' + tip);
+    updateInv();
+  }
 }
 
 canvas.addEventListener('pointerdown', e=>{
@@ -674,11 +775,15 @@ function newGame(denom){
   redeemed = false;
   charged = false;            // 新彩票未计费，刮开时才扣款
   peeked = false;             // 重置透视标记
-  // 移除上一张彩票的透视徽章和边框高亮
+  insured = false;            // 重置投保标记
+  insPaidOut = false;         // 重置保本结算标记
+  // 移除上一张彩票的透视徽章、保险徽章和边框高亮
   const wrap = $('ticketWrap');
   wrap.classList.remove('peek-win','peek-lose');
-  const oldBadge = wrap.querySelector('.peek-badge');
-  if(oldBadge) oldBadge.remove();
+  const oldPeekBadge = wrap.querySelector('.peek-badge');
+  if(oldPeekBadge) oldPeekBadge.remove();
+  const oldInsBadge = wrap.querySelector('.ins-badge');
+  if(oldInsBadge) oldInsBadge.remove();
   updateTheme(denom);
   updateInfo(denom);
   renderProbTable(denom);
@@ -704,14 +809,20 @@ function loan(){
 function updateInv(){
   $('invPeek').textContent = peekUses;
   $('invFate').textContent = fateUses;
+  $('invRP').textContent = rpUses;
+  $('invIns').textContent = insUses;
   // 仅在没库存时禁用按钮（其他限制在点击时弹窗提示，避免用户困惑"有次数为啥点不了"）
   $('usePeekBtn').disabled = peekUses <= 0;
   $('useFateBtn').disabled = fateUses <= 0;
+  $('useRPBtn').disabled = rpUses <= 0;
+  $('useInsBtn').disabled = insUses <= 0;
 }
 // ===== 商店 =====
 function openShop(){
   $('buyPeekBtn').disabled = balance < PEEK_PRICE;
   $('buyFateBtn').disabled = balance < FATE_PRICE;
+  $('buyRPBtn').disabled = balance < RP_PRICE;
+  $('buyInsBtn').disabled = balance < INS_PRICE;
   $('shopMask').classList.add('show');
 }
 function closeShop(){ $('shopMask').classList.remove('show'); }
@@ -737,6 +848,30 @@ function buyFate(){
   updateBalance(`购买逆天改命卡（¥${FATE_PRICE}），剩余 ${fateUses} 张`);
   updateInv();
   $('buyFateBtn').disabled = balance < FATE_PRICE;
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 600);
+}
+function buyRP(){
+  if(balance < RP_PRICE) return;
+  balance -= RP_PRICE;
+  rpUses += 1;
+  updateBalance(`购买幸运红包（¥${RP_PRICE}），剩余 ${rpUses} 个`);
+  updateInv();
+  $('buyRPBtn').disabled = balance < RP_PRICE;
+  $('buyInsBtn').disabled = balance < INS_PRICE;
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 600);
+}
+function buyIns(){
+  if(balance < INS_PRICE) return;
+  balance -= INS_PRICE;
+  insUses += 1;
+  updateBalance(`购买保本保险卡（¥${INS_PRICE}），剩余 ${insUses} 张`);
+  updateInv();
+  $('buyRPBtn').disabled = balance < RP_PRICE;
+  $('buyInsBtn').disabled = balance < INS_PRICE;
   const el = $('balanceAmt');
   el.classList.add('gain');
   setTimeout(()=> el.classList.remove('gain'), 600);
@@ -848,6 +983,121 @@ function useFate(){
   updateBalance((isBig ? '🎴 大爆发！' : '🎴 ') + sub);
   updateInv();
 }
+// ===== 幸运红包：视觉反馈封装 =====
+function showRPResult(amount){
+  // 1) 全屏红光脉冲
+  const flash = document.createElement('div');
+  flash.className = 'redpack-flash';
+  document.body.appendChild(flash);
+  setTimeout(()=> flash.remove(), 1200);
+  // 2) 中央大弹窗
+  const modal = document.createElement('div');
+  modal.className = 'redpack-modal';
+  modal.innerHTML = `
+    <span class="rp-icon">🧧</span>
+    <div class="rp-title">恭喜发财 · 红包打开</div>
+    <div class="rp-amt">+¥${fmt(amount)}</div>
+    <div class="rp-sub">现金已入账（优先偿还欠款）</div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(()=>{ modal.classList.add('out'); setTimeout(()=> modal.remove(), 500); }, 2000);
+}
+// ===== 使用道具：幸运红包 =====
+function useRP(){
+  if(rpUses <= 0){
+    showPeekTip('还没有幸运红包', '请到商店购买后使用', false);
+    return;
+  }
+  rpUses -= 1;
+  // 随机金额：¥5(40%) / ¥10(30%) / ¥20(15%) / ¥50(10%) / ¥88(5%)
+  const r = rand();
+  let amount;
+  if(r < 0.40) amount = 5;
+  else if(r < 0.70) amount = 10;
+  else if(r < 0.85) amount = 20;
+  else if(r < 0.95) amount = 50;
+  else amount = 88;
+  // 先还贷（与逆天改命逻辑一致）
+  let sub;
+  if(loanDebt > 0){
+    const repay = Math.min(loanDebt, amount);
+    loanDebt -= repay;
+    const remain = amount - repay;
+    balance += remain;
+    sub = repay > 0 && remain > 0
+      ? `还款 ¥${fmt(repay)}，入账 ¥${fmt(remain)}（仍欠 ¥${fmt(loanDebt)}）`
+      : repay > 0
+        ? `全部用于还款（仍欠 ¥${fmt(loanDebt)}）`
+        : `入账 ¥${fmt(remain)}，已还清欠款`;
+  } else {
+    balance += amount;
+    sub = `入账 ¥${fmt(amount)}`;
+  }
+  showRPResult(amount);
+  const el = $('balanceAmt');
+  el.classList.add('gain');
+  setTimeout(()=> el.classList.remove('gain'), 1000);
+  updateBalance('🧧 ' + sub);
+  updateInv();
+}
+// ===== 保本保险卡：视觉反馈封装 =====
+// mode: 'on'=投保成功  'back'=保本返还触发
+function showInsResult(mode, refund){
+  const flash = document.createElement('div');
+  flash.className = 'ins-flash ' + mode;
+  document.body.appendChild(flash);
+  setTimeout(()=> flash.remove(), mode==='back' ? 1300 : 800);
+  const modal = document.createElement('div');
+  modal.className = 'ins-modal ' + mode;
+  if(mode === 'on'){
+    modal.innerHTML = `
+      <span class="ins-icon">🛡️</span>
+      <div class="ins-title">投保成功</div>
+      <div class="ins-sub">本张未刮开彩票已加入保本计划<br>若未中奖将返还面值 40%</div>
+    `;
+  } else {
+    modal.innerHTML = `
+      <span class="ins-icon">💰</span>
+      <div class="ins-title">保本返还</div>
+      <div class="ins-amt">+¥${fmt(refund)}</div>
+      <div class="ins-sub">未中奖，已按面值 40% 返还到余额</div>
+    `;
+  }
+  document.body.appendChild(modal);
+  setTimeout(()=>{ modal.classList.add('out'); setTimeout(()=> modal.remove(), 450); }, mode==='back' ? 2200 : 1600);
+}
+// ===== 使用道具：保本保险卡 =====
+function useIns(){
+  if(insUses <= 0){
+    showPeekTip('还没有保本保险卡', '请到商店购买后使用', false);
+    return;
+  }
+  if(!curTicket){
+    showPeekTip('还没有彩票', '请先点「再来一张」出一张彩票', false);
+    return;
+  }
+  if(revealed){
+    showPeekTip('彩票已刮开', '未刮开的彩票才能投保，请换新彩票', false);
+    return;
+  }
+  if(insured){
+    showPeekTip('当前彩票已投保', '同一张票不可重复投保，请换新彩票', false);
+    return;
+  }
+  insUses -= 1;
+  insured = true;
+  // 在彩票左上角添加"已投保"徽章
+  const wrap = $('ticketWrap');
+  let badge = wrap.querySelector('.ins-badge');
+  if(badge) badge.remove();
+  badge = document.createElement('div');
+  badge.className = 'ins-badge';
+  badge.textContent = '🛡️ 已投保';
+  wrap.appendChild(badge);
+  showInsResult('on', 0);
+  updateBalance('🛡️ 当前彩票已投保（未中奖返还面值40%）');
+  updateInv();
+}
 
 // ===== 事件 =====
 document.querySelectorAll('.denom-selector button').forEach(b=>{
@@ -863,9 +1113,13 @@ $('shopClose').addEventListener('click', closeShop);
 $('shopMask').addEventListener('click', e=>{ if(e.target.id === 'shopMask') closeShop(); });
 $('buyPeekBtn').addEventListener('click', buyPeek);
 $('buyFateBtn').addEventListener('click', buyFate);
+$('buyRPBtn').addEventListener('click', buyRP);
+$('buyInsBtn').addEventListener('click', buyIns);
 // 道具使用
 $('usePeekBtn').addEventListener('click', usePeek);
 $('useFateBtn').addEventListener('click', useFate);
+$('useRPBtn').addEventListener('click', useRP);
+$('useInsBtn').addEventListener('click', useIns);
 $('probToggle').addEventListener('click', ()=> $('probTable').classList.toggle('show'));
 window.addEventListener('resize', ()=>{
   if(!curTicket) return;
