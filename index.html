@@ -109,10 +109,55 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
 .inv-item .use-btn{margin-left:4px;background:rgba(46,204,113,.2);border:1px solid rgba(46,204,113,.4);color:#7bed9f;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;transition:.2s;}
 .inv-item .use-btn:hover{background:rgba(46,204,113,.35);}
 .inv-item .use-btn:disabled{background:#555;border-color:#555;color:#999;cursor:not-allowed;}
-/* 透视结果浮层 */
-.peek-badge{position:absolute;top:10px;right:10px;z-index:4;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);animation:pop .3s ease;}
+/* 透视结果浮层（彩票右上角小徽章） */
+.peek-badge{position:absolute;top:10px;right:10px;z-index:6;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4);animation:pop .3s ease;}
 .peek-badge.win{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;}
 .peek-badge.lose{background:linear-gradient(135deg,#7f8c8d,#5d6d7e);color:#fff;}
+/* 透视时彩票边框高亮 */
+.ticket-wrap.peek-win{box-shadow:0 0 0 3px #2ecc71, 0 0 30px rgba(46,204,113,.7), 0 8px 24px rgba(0,0,0,.35);animation:pulseWin 1.2s ease-in-out infinite;}
+.ticket-wrap.peek-lose{box-shadow:0 0 0 3px #7f8c8d, 0 0 20px rgba(127,140,141,.5), 0 8px 24px rgba(0,0,0,.35);animation:shake .4s ease;}
+@keyframes pulseWin{0%,100%{box-shadow:0 0 0 3px #2ecc71, 0 0 20px rgba(46,204,113,.5), 0 8px 24px rgba(0,0,0,.35);}50%{box-shadow:0 0 0 5px #2ecc71, 0 0 40px rgba(46,204,113,.9), 0 8px 24px rgba(0,0,0,.35);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+/* 透视全屏闪光 */
+.peek-flash{position:fixed;inset:0;z-index:200;display:flex;justify-content:center;align-items:center;pointer-events:none;animation:flashAnim .9s ease-out forwards;}
+.peek-flash.win{background:radial-gradient(circle, rgba(46,204,113,.45) 0%, rgba(46,204,113,0) 70%);}
+.peek-flash.lose{background:radial-gradient(circle, rgba(127,140,141,.4) 0%, rgba(127,140,141,0) 70%);}
+@keyframes flashAnim{0%{opacity:0;}15%{opacity:1;}100%{opacity:0;}}
+/* 透视中央大弹窗 */
+.peek-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.6);z-index:201;background:linear-gradient(160deg,#1a1a2e,#16213e);color:#fff;padding:28px 36px;border-radius:20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);border:2px solid;opacity:0;pointer-events:none;animation:modalIn .5s cubic-bezier(.34,1.56,.64,1) forwards;}
+.peek-modal.win{border-color:#2ecc71;box-shadow:0 20px 60px rgba(46,204,113,.5);}
+.peek-modal.lose{border-color:#7f8c8d;box-shadow:0 20px 60px rgba(127,140,141,.4);}
+.peek-modal .pm-icon{font-size:54px;line-height:1;margin-bottom:10px;display:block;}
+.peek-modal .pm-title{font-size:26px;font-weight:800;margin-bottom:6px;letter-spacing:2px;}
+.peek-modal .pm-sub{font-size:14px;opacity:.85;}
+.peek-modal.win .pm-title{color:#7bed9f;}
+.peek-modal.lose .pm-title{color:#d5d8dc;}
+@keyframes modalIn{0%{transform:translate(-50%,-50%) scale(.6);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.08);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.peek-modal.out{animation:modalOut .4s ease forwards;}
+@keyframes modalOut{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(.85);opacity:0;}}
+/* 逆天改命卡全屏闪光 */
+.fate-flash{position:fixed;inset:0;z-index:200;display:flex;justify-content:center;align-items:center;pointer-events:none;animation:flashAnim 1.2s ease-out forwards;}
+.fate-flash.small{background:radial-gradient(circle, rgba(127,140,141,.35) 0%, rgba(127,140,141,0) 70%);}
+.fate-flash.big{background:radial-gradient(circle, rgba(255,215,0,.55) 0%, rgba(255,215,0,0) 70%);animation:goldFlash 1.4s ease-out;}
+@keyframes goldFlash{0%{opacity:0;}10%{opacity:1;}30%{opacity:.9;}100%{opacity:0;}}
+/* 逆天改命卡中央大弹窗 */
+.fate-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.5);z-index:201;background:linear-gradient(160deg,#1a1a2e,#16213e);color:#fff;padding:32px 44px;border-radius:22px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.6);border:3px solid;opacity:0;pointer-events:none;}
+.fate-modal.small{border-color:#7f8c8d;animation:fateSmallIn .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+.fate-modal.big{border-color:#ffd700;box-shadow:0 24px 70px rgba(255,215,0,.55);animation:fateBigIn .8s cubic-bezier(.34,1.56,.64,1) forwards;}
+@keyframes fateSmallIn{0%{transform:translate(-50%,-50%) scale(.5) rotate(-10deg);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.05) rotate(2deg);opacity:1;}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
+@keyframes fateBigIn{0%{transform:translate(-50%,-50%) scale(.3) rotate(-20deg);opacity:0;}40%{transform:translate(-50%,-50%) scale(1.15) rotate(5deg);opacity:1;}60%{transform:translate(-50%,-50%) scale(1.05) rotate(-2deg);}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}}
+.fate-modal .fm-icon{font-size:64px;line-height:1;margin-bottom:8px;display:block;}
+.fate-modal.big .fm-icon{animation:spin 1.2s ease;}
+@keyframes spin{0%{transform:rotate(0) scale(.5);}50%{transform:rotate(360deg) scale(1.3);}100%{transform:rotate(720deg) scale(1);}}
+.fate-modal .fm-title{font-size:30px;font-weight:800;margin-bottom:8px;letter-spacing:3px;}
+.fate-modal.big .fm-title{color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,.8);animation:glow 1.5s ease-in-out infinite;}
+@keyframes glow{0%,100%{text-shadow:0 0 12px rgba(255,215,0,.6);}50%{text-shadow:0 0 28px rgba(255,215,0,1);}}
+.fate-modal .fm-prize{font-size:40px;font-weight:900;margin:8px 0;font-family:'Courier New',monospace;letter-spacing:2px;}
+.fate-modal.small .fm-prize{color:#d5d8dc;}
+.fate-modal.big .fm-prize{color:#ffd700;}
+.fate-modal .fm-sub{font-size:14px;opacity:.85;}
+.fate-modal.out{animation:fateOut .5s ease forwards !important;}
+@keyframes fateOut{0%{transform:translate(-50%,-50%) scale(1);opacity:1;}100%{transform:translate(-50%,-50%) scale(.8);opacity:0;}}
 .app.denom-20{--accent:var(--c-20-acc);--theme-bg:var(--c-20-bg);--theme-c:var(--c-20);}
 .app.denom-50{--accent:var(--c-50-acc);--theme-bg:var(--c-50-bg);--theme-c:var(--c-50);}
 @media(max-width:380px){
@@ -186,7 +231,7 @@ header p{margin:4px 0 0;font-size:12px;opacity:.8;}
           <span class="stock" id="stockPeek">库存：无限</span>
         </div>
         <div class="buy">
-          <span class="price">¥500</span>
+          <span class="price">¥200</span>
           <button id="buyPeekBtn">购买</button>
         </div>
       </div>
@@ -277,7 +322,7 @@ const LOAN_AMT = 500;       // 单次贷款金额
 let peekUses = 0;           // 透视镜剩余使用次数
 let fateUses = 0;           // 逆天改命卡剩余使用次数
 let peeked = false;         // 当前彩票是否已使用透视镜（防重复）
-const PEEK_PRICE = 500;     // 透视镜售价（购买一次得 3 次使用）
+const PEEK_PRICE = 200;     // 透视镜售价（购买一次得 3 次使用）
 const FATE_PRICE = 150;     // 逆天改命卡售价（购买一次得 1 次使用）
 
 const $ = id => document.getElementById(id);
@@ -471,6 +516,8 @@ function autoReveal(){
     balance -= price;
     updateBalance(`刮开计费 ¥${price}`);
   }
+  // 刮开后移除透视高亮（结果已揭晓，无需再闪）
+  wrapEl.classList.remove('peek-win','peek-lose');
   revealDom();               // 同步真实号码（在淡出过程中）
   canvas.style.transition = 'opacity .45s ease';
   canvas.style.opacity = '0';
@@ -619,14 +666,18 @@ function newGame(denom){
     tip.textContent = `余额不足（需 ¥${price}），请贷款或切换低档位`;
     tip.style.color = '#ff6b6b';
     setTimeout(()=>{ tip.style.color = ''; }, 2500);
+    // 明显弹窗提示（引导贷款或切档位）
+    showPeekTip('余额不足', `出票需 ¥${price}，请先「贷款 ¥500」或切换低档位`, false);
     return;
   }
   curDenom = denom;
   redeemed = false;
   charged = false;            // 新彩票未计费，刮开时才扣款
   peeked = false;             // 重置透视标记
-  // 移除上一张彩票的透视徽章
-  const oldBadge = document.querySelector('.peek-badge');
+  // 移除上一张彩票的透视徽章和边框高亮
+  const wrap = $('ticketWrap');
+  wrap.classList.remove('peek-win','peek-lose');
+  const oldBadge = wrap.querySelector('.peek-badge');
   if(oldBadge) oldBadge.remove();
   updateTheme(denom);
   updateInfo(denom);
@@ -653,7 +704,8 @@ function loan(){
 function updateInv(){
   $('invPeek').textContent = peekUses;
   $('invFate').textContent = fateUses;
-  $('usePeekBtn').disabled = peekUses <= 0 || !curTicket || revealed || peeked;
+  // 仅在没库存时禁用按钮（其他限制在点击时弹窗提示，避免用户困惑"有次数为啥点不了"）
+  $('usePeekBtn').disabled = peekUses <= 0;
   $('useFateBtn').disabled = fateUses <= 0;
 }
 // ===== 商店 =====
@@ -673,6 +725,10 @@ function buyPeek(){
   const el = $('balanceAmt');
   el.classList.add('gain');
   setTimeout(()=> el.classList.remove('gain'), 600);
+  // 当前彩票已透视过：提示用户换新彩票后使用
+  if(peeked && curTicket && !revealed){
+    showPeekTip('购买成功 · 当前彩票已透视', '请「再来一张」换新彩票后使用透视镜', false);
+  }
 }
 function buyFate(){
   if(balance < FATE_PRICE) return;
@@ -686,47 +742,110 @@ function buyFate(){
   setTimeout(()=> el.classList.remove('gain'), 600);
 }
 // ===== 使用道具：透视镜 =====
+// 透视提示弹窗（win=true 绿色 / false 灰色）
+function showPeekTip(title, sub, win){
+  const modal = document.createElement('div');
+  modal.className = 'peek-modal ' + (win ? 'win' : 'lose');
+  modal.innerHTML = `<span class="pm-icon">${win ? '🎉' : '💧'}</span><div class="pm-title">${title}</div><div class="pm-sub">${sub}</div>`;
+  document.body.appendChild(modal);
+  setTimeout(()=>{ modal.classList.add('out'); setTimeout(()=> modal.remove(), 400); }, 1600);
+}
 function usePeek(){
-  if(peekUses <= 0 || !curTicket || revealed || peeked) return;
+  // 没库存（正常情况按钮已禁用）
+  if(peekUses <= 0) return;
+  // 没有彩票：先出票
+  if(!curTicket){
+    showPeekTip('还没有彩票', '请先点「再来一张」出一张彩票', false);
+    return;
+  }
+  // 已刮开：无法透视
+  if(revealed){
+    showPeekTip('彩票已刮开', '未刮开的彩票才能使用透视镜，请换新彩票', false);
+    return;
+  }
+  // 已透视过当前彩票：不消耗次数，给提示
+  if(peeked){
+    showPeekTip('当前彩票已透视过', '请先「再来一张」换新彩票后再使用', false);
+    return;
+  }
   peekUses -= 1;
   peeked = true;
   const won = curTicket.total > 0;
-  // 在彩票右上角显示结果浮层
   const wrap = $('ticketWrap');
+  // 1) 彩票区域边框发光 / 震动
+  wrap.classList.remove('peek-win','peek-lose');
+  void wrap.offsetWidth;             // 重置动画
+  wrap.classList.add(won ? 'peek-win' : 'peek-lose');
+  // 2) 右上角小徽章（仅提示中奖与否，不透露具体金额）
   let badge = wrap.querySelector('.peek-badge');
   if(badge) badge.remove();
   badge = document.createElement('div');
   badge.className = 'peek-badge ' + (won ? 'win' : 'lose');
-  badge.textContent = won ? `🔍 透视：已中奖（¥${fmt(curTicket.total)}）` : '🔍 透视：未中奖';
+  badge.textContent = won ? '🔍 已中奖' : '🔍 未中奖';
   wrap.appendChild(badge);
+  // 3) 全屏闪光
+  const flash = document.createElement('div');
+  flash.className = 'peek-flash ' + (won ? 'win' : 'lose');
+  document.body.appendChild(flash);
+  setTimeout(()=> flash.remove(), 900);
+  // 4) 中央大弹窗（仅提示中奖与否，不透露具体金额）
+  if(won){
+    showPeekTip('中 奖', '本张已中奖 · 刮开即可揭晓奖金', true);
+  } else {
+    showPeekTip('未 中', '本张未中奖 · 可直接换下一张', false);
+  }
   updateInv();
-  updateBalance(`使用透视镜，结果：${won ? '中奖' : '未中奖'}，剩余 ${peekUses} 次`);
+  updateBalance(`使用透视镜：${won ? '中奖' : '未中奖'}，剩余 ${peekUses} 次`);
 }
 // ===== 使用道具：逆天改命卡 =====
+// 逆天改命视觉反馈封装
+function showFateResult(isBig, prize, sub){
+  // 1) 全屏闪光
+  const flash = document.createElement('div');
+  flash.className = 'fate-flash ' + (isBig ? 'big' : 'small');
+  document.body.appendChild(flash);
+  setTimeout(()=> flash.remove(), 1400);
+  // 2) 中央大弹窗
+  const modal = document.createElement('div');
+  modal.className = 'fate-modal ' + (isBig ? 'big' : 'small');
+  modal.innerHTML = isBig
+    ? `<span class="fm-icon">🎴</span><div class="fm-title">逆天改命 · 大爆发</div><div class="fm-prize">¥${fmt(prize)}</div><div class="fm-sub">${sub}</div>`
+    : `<span class="fm-icon">🎴</span><div class="fm-title">逆天改命</div><div class="fm-prize">¥${fmt(prize)}</div><div class="fm-sub">${sub}</div>`;
+  document.body.appendChild(modal);
+  setTimeout(()=>{ modal.classList.add('out'); setTimeout(()=> modal.remove(), 500); }, 2200);
+}
 function useFate(){
-  if(fateUses <= 0) return;
+  // 没库存（正常情况按钮已禁用，这里防直接调用）
+  if(fateUses <= 0){
+    showPeekTip('还没有逆天改命卡', '请到商店购买后使用', false);
+    return;
+  }
   fateUses -= 1;
   // 99% 概率 ¥1，1% 概率 ¥5000
   const isBig = Math.random() < 0.01;
   const prize = isBig ? 5000 : 1;
   // 优先还贷（逻辑与兑换奖金相同）
-  let tip;
+  let sub;
   if(loanDebt > 0){
     const repay = Math.min(loanDebt, prize);
     loanDebt -= repay;
     const remain = prize - repay;
     balance += remain;
-    tip = isBig
-      ? `逆天改命大爆发！获得 ¥${fmt(prize)}（还款 ¥${fmt(repay)}，入账 ¥${fmt(remain)}）`
-      : `逆天改命获得 ¥${fmt(prize)}（还款 ¥${fmt(repay)}）`;
+    sub = repay > 0 && remain > 0
+      ? `还款 ¥${fmt(repay)}，入账 ¥${fmt(remain)}（仍欠 ¥${fmt(loanDebt)}）`
+      : repay > 0
+        ? `全部用于还款（仍欠 ¥${fmt(loanDebt)}）`
+        : `入账 ¥${fmt(remain)}，已还清欠款`;
   } else {
     balance += prize;
-    tip = isBig ? `逆天改命大爆发！获得 ¥${fmt(prize)}！` : `逆天改命获得 ¥${fmt(prize)}`;
+    sub = `入账 ¥${fmt(prize)}`;
   }
+  // 显示大反馈
+  showFateResult(isBig, prize, sub);
   const el = $('balanceAmt');
   el.classList.add('gain');
-  setTimeout(()=> el.classList.remove('gain'), 800);
-  updateBalance(tip);
+  setTimeout(()=> el.classList.remove('gain'), 1000);
+  updateBalance((isBig ? '🎴 大爆发！' : '🎴 ') + sub);
   updateInv();
 }
 
