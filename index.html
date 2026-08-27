@@ -666,11 +666,9 @@ function showResult(){
     amt.textContent = '¥' + fmt(t.total);
     amt.classList.remove('zero');
     hint.textContent = `恭喜中奖（面值 ¥${t.cfg.price}，回报 ¥${fmt(t.total)}）`;
-    // 显示一键兑换按钮（未兑换时）
+    // 自动兑换，无需手动点击
     if(!redeemed){
-      rbtn.textContent = `一键兑换 ¥${fmt(t.total)}`;
-      rbtn.classList.add('show');
-      rbtn.disabled = false;
+      redeem();
     }
   } else {
     amt.textContent = '¥0';
@@ -705,8 +703,7 @@ function redeem(){
     tip = `已兑换 ¥${fmt(prize)}`;
   }
   const rbtn = $('redeemBtn');
-  rbtn.disabled = true;
-  rbtn.textContent = '已兑换 ✓';
+  rbtn.classList.remove('show');
   const el = $('balanceAmt');
   el.classList.add('gain');
   setTimeout(()=> el.classList.remove('gain'), 800);
