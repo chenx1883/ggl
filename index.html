@@ -374,8 +374,8 @@ let revealed = false;       // 当前彩票是否已揭层
 let charged = false;        // 当前彩票是否已扣款（刮开时才计费）
 let drawing = false, lastX=0, lastY=0;
 let lastCheck = 0;
-const ER = 22;               // 刮擦半径
-const THRESH = 0.5;         // 刮开面积阈值
+const ER = 32;               // 刮擦半径
+const THRESH = 0.3;         // 刮开面积阈值（30%即自动揭开）
 let balance = 500;          // 玩家余额（初始本金 ¥500）
 let redeemed = false;       // 当前彩票奖金是否已兑换
 let loanDebt = 0;           // 当前欠款总额（贷款累计）
@@ -455,9 +455,8 @@ function generateTicket(denom, winRateBuff=0){
       actual = 0;
       do{ finalMine = num2(); } while(winSet.has(finalMine));
     }
-    // 防泄露：揭层前 DOM 显示随机号码，揭层瞬间同步为真实结果
-    const initialMine = num2();
-    rounds.push({idx:i+1, win, tier, mine:initialMine, finalMine, displayPrize:display, actualPrize:actual, mult});
+    // DOM 直接显示真实号码（Canvas 刮膜已完全覆盖，无需防泄露假号码）
+    rounds.push({idx:i+1, win, tier, mine:finalMine, finalMine, displayPrize:display, actualPrize:actual, mult});
   }
   const total = rounds.reduce((s,r)=>s+r.actualPrize, 0);
   return {denom, winNums, rounds, total, cfg, isWin:isTicketWin};
